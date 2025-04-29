@@ -1,0 +1,72 @@
+---
+layout: none
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ site.title }}</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="portfolio-grid">
+    {% for project in site.projects %}
+      <div class="portfolio-item">
+        
+        {% unless project.title == "about me" %}
+          <h2>{{ project.title }}</h2>
+        {% endunless %}
+
+        {% if project.image_folder %}
+          {% assign folder_path = '/assets/images/' | append: project.image_folder %}
+          {% assign images = site.static_files | where_exp: "file", "file.path contains folder_path" %}
+          {% assign sorted_images = images | sort: "path" %}
+          
+          {% if sorted_images.size > 0 %}
+            <div class="carousel" data-project="{{ forloop.index }}">
+              <img class="carousel-main" src="{{ sorted_images[0].path }}" alt="{{ project.title }}">
+              
+              {% if sorted_images.size > 1 %}
+                <div class="carousel-controls">
+                  <button class="prev" onclick="changeSlide({{ forloop.index }}, -1)">‹</button>
+                  <button class="next" onclick="changeSlide({{ forloop.index }}, 1)">›</button>
+                </div>
+              {% endif %}
+            </div>
+            
+            <script>
+              window.carouselData = window.carouselData || {};
+              window.carouselData[{{ forloop.index }}] = [
+                {% for image in sorted_images %}
+                  "{{ image.path }}"{% unless forloop.last %},{% endunless %}
+                {% endfor %}
+              ];
+            </script>
+          {% endif %}
+        {% elsif project.image %}
+          <img src="{{ project.image }}" alt="{{ project.title }}" style="width:100%; height:auto; margin-bottom:10px;">
+        {% endif %}
+
+        {% if project.description %}
+          {{ project.description | markdownify }}
+        {% endif %}
+
+        {{ project.content }}
+      </div>
+    {% endfor %}
+  </div>
+
+  <script>
+    function changeSlide(projectId, delta) {
+      const img = document.querySelector('.carousel[data-project="' + projectId + '"] .carousel-main');
+      const images = window.carouselData[projectId];
+      let currentIndex = images.indexOf(img.src.replace(window.location.origin, ''));
+      let nextIndex = (currentIndex + delta + images.length) % images.length;
+      img.src = images[nextIndex];
+    }
+  </script>
+</body>
+</html>
+
