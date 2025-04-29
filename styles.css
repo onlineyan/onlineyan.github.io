@@ -49,13 +49,14 @@ body {
 }
 
 .portfolio-item pre {
-  white-space: pre-wrap;         
-  word-wrap: break-word;          
-  overflow-wrap: break-word;      
+  white-space: pre;             
+  overflow-x: auto;               
   max-width: 100%;                
-  color: white;                   
-  padding: 10px;                 
-  font-family: monospace;         
+  font-family: monospace;        
+  color: white;                  
+  background-color: black;       
+  padding: 10px;
+  box-sizing: border-box;        
 }
 
 .carousel {
@@ -83,3 +84,6 @@ body {
   cursor: pointer;
 }
 
+.portfolio-item pre::-webkit-scrollbar {
+  display: none;
+}
